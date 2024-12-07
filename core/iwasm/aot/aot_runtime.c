@@ -1580,7 +1580,7 @@ aot_set_exception(AOTModuleInstance *module_inst,
     if (exception)
         snprintf(module_inst->cur_exception,
                  sizeof(module_inst->cur_exception),
-                 "Exception: %s", exception);
+                 "Exception: %.116s", exception);
     else
         module_inst->cur_exception[0] = '\0';
 }
