@@ -15,6 +15,7 @@
 #include "locking.h"
 #include "numeric_limits.h"
 #include "posix.h"
+#include <string.h>  //
 #include "random.h"
 #include "refcount.h"
 #include "rights.h"
@@ -2717,83 +2718,181 @@ __wasi_errno_t wasmtime_ssp_random_get(
   return 0;
 }
 
-__wasi_errno_t wasmtime_ssp_sock_recv(
-#if !defined(WASMTIME_SSP_STATIC_CURFDS)
-    struct fd_table *curfds,
-#endif
-    __wasi_fd_t sock,
-    const __wasi_iovec_t *ri_data,
-    size_t ri_data_len,
-    __wasi_riflags_t ri_flags,
-    size_t *ro_datalen,
-    __wasi_roflags_t *ro_flags
+__wasi_errno_t wasmtime_ssp_sock_open(
+    int domain, 
+    int type, 
+    int protocol
 ) {
-  // Convert input to msghdr.
-  struct msghdr hdr = {
-      .msg_iov = (struct iovec *)ri_data,
-      .msg_iovlen = ri_data_len,
-  };
-  int nflags = 0;
-  if ((ri_flags & __WASI_SOCK_RECV_PEEK) != 0)
-    nflags |= MSG_PEEK;
-  if ((ri_flags & __WASI_SOCK_RECV_WAITALL) != 0)
-    nflags |= MSG_WAITALL;
+  return socket(domain, type, protocol);
+}
 
-  struct fd_object *fo;
-  __wasi_errno_t error = fd_object_get(curfds, &fo, sock, __WASI_RIGHT_FD_READ, 0);
-  if (error != 0) {
-    return error;
-  }
+__wasi_errno_t wasmtime_ssp_sock_bind(
+    int sockfd, 
+    const struct sockaddr *addr,
+    socklen_t addrlen
+) {  
+  return bind(sockfd, addr, addrlen);
+}
 
-  ssize_t datalen = recvmsg(fd_number(fo), &hdr, nflags);
-  fd_object_release(fo);
-  if (datalen < 0) {
-    return convert_errno(errno);
-  }
+__wasi_errno_t wasmtime_ssp_sock_listen(
+    int sockfd, 
+    int backlog
+) {
+  return listen(sockfd, backlog);
+}
+
+__wasi_errno_t wasmtime_ssp_sock_accept(
+    int sockfd, 
+    struct sockaddr *addr,
+    socklen_t *addrlen
+) {
+  return accept(sockfd, addr, addrlen);
+}
+
+__wasi_errno_t wasmtime_ssp_sock_connect(
+    int sockfd, 
+    const struct sockaddr *addr,
+    socklen_t addrlen
+) {
+  return connect(sockfd, addr, addrlen);
+}
+
+__wasi_errno_t wasmtime_ssp_sock_recv(
+// #if !defined(WASMTIME_SSP_STATIC_CURFDS)
+//     struct fd_table *curfds,
+// #endif
+    int sockfd,
+    void *buf,
+    size_t len,
+    int flags
+) {
+  // // Convert input to msghdr.
+  // struct msghdr hdr = {
+  //     .msg_iov = (struct iovec *)ri_data,
+  //     .msg_iovlen = ri_data_len,
+  // };
+  // int nflags = 0;
+  // if ((ri_flags & __WASI_SOCK_RECV_PEEK) != 0)
+  //   nflags |= MSG_PEEK;
+  // if ((ri_flags & __WASI_SOCK_RECV_WAITALL) != 0)
+  //   nflags |= MSG_WAITALL;
+
+  // struct fd_object *fo;
+  // __wasi_errno_t error = fd_object_get(curfds, &fo, sock, __WASI_RIGHT_FD_READ, 0);
+  // if (error != 0) {
+  //   return error;
+  // }
+
+  // ssize_t datalen = recvmsg(fd_number(fo), &hdr, nflags);
+  // fd_object_release(fo);
+  // if (datalen < 0) {
+  //   return convert_errno(errno);
+  // }
 
 
-  // Convert msghdr to output.
-  *ro_datalen = (size_t)datalen;
-  *ro_flags = 0;
-  if ((hdr.msg_flags & MSG_TRUNC) != 0)
-    *ro_flags |= __WASI_SOCK_RECV_DATA_TRUNCATED;
-  return 0;
+  // // Convert msghdr to output.
+  // *ro_datalen = (size_t)datalen;
+  // *ro_flags = 0;
+  // if ((hdr.msg_flags & MSG_TRUNC) != 0)
+  //   *ro_flags |= __WASI_SOCK_RECV_DATA_TRUNCATED;
+  // return 0;
+
+  return recv(sockfd, buf, len, flags);
+}
+
+__wasi_errno_t wasmtime_ssp_sock_recvfrom(
+    int sockfd,
+    void *buf,
+    size_t len,
+    int flags,
+    struct sockaddr *src_addr,
+    socklen_t *addrlen
+) {
+  return recvfrom(sockfd, buf, len, flags, src_addr, addrlen);
 }
 
 __wasi_errno_t wasmtime_ssp_sock_send(
-#if !defined(WASMTIME_SSP_STATIC_CURFDS)
-    struct fd_table *curfds,
-#endif
-    __wasi_fd_t sock,
-    const __wasi_ciovec_t *si_data,
-    size_t si_data_len,
-    __wasi_siflags_t si_flags,
-    size_t *so_datalen
-) NO_LOCK_ANALYSIS {
-  // Convert input to msghdr.
-  struct msghdr hdr = {
-      .msg_iov = (struct iovec *)si_data,
-      .msg_iovlen = si_data_len,
-  };
+// #if !defined(WASMTIME_SSP_STATIC_CURFDS)
+//     struct fd_table *curfds,
+// #endif
+    int sockfd,
+    const void *buf,
+    size_t len,
+    int flags
+// ) NO_LOCK_ANALYSIS {
+//   // Convert input to msghdr.
+//   struct msghdr hdr = {
+//       .msg_iov = (struct iovec *)si_data,
+//       .msg_iovlen = si_data_len,
+//   };
 
-  // Attach file descriptors if present.
-  __wasi_errno_t error;
+//   // Attach file descriptors if present.
+//   __wasi_errno_t error;
 
-  // Send message.
-  struct fd_object *fo;
-  error = fd_object_get(curfds, &fo, sock, __WASI_RIGHT_FD_WRITE, 0);
-  if (error != 0)
-    goto out;
-  ssize_t len = sendmsg(fd_number(fo), &hdr, 0);
-  fd_object_release(fo);
-  if (len < 0) {
-    error = convert_errno(errno);
-  } else {
-    *so_datalen = (size_t)len;
-  }
+//   // Send message.
+//   struct fd_object *fo;
+//   error = fd_object_get(curfds, &fo, sock, __WASI_RIGHT_FD_WRITE, 0);
+//   if (error != 0)
+//     goto out;
+//   ssize_t len = sendmsg(fd_number(fo), &hdr, 0);
+//   fd_object_release(fo);
+//   if (len < 0) {
+//     error = convert_errno(errno);
+//   } else {
+//     *so_datalen = (size_t)len;
+//   }
 
-out:
-  return error;
+// out:
+//   return error;
+) {
+  return send(sockfd, buf, len, flags);
+}
+
+__wasi_errno_t wasmtime_ssp_sock_sendto(
+    int sockfd,
+    const void *buf,
+    size_t len,
+    int flags,
+    const struct sockaddr *dest_addr,
+    socklen_t addrlen
+) {
+  return sendto(sockfd, buf, len, flags, dest_addr, addrlen);
+}
+
+__wasi_errno_t wasmtime_ssp_mkfifo(
+  const char *path,
+  int mode
+) {
+  return mkfifo(path, mode);
+}
+
+__wasi_errno_t wasmtime_ssp_open(
+  const char *path,
+  int flags
+) {
+  return open(path, flags);
+}
+
+__wasi_errno_t wasmtime_ssp_close(
+  int fd
+) {
+  return close(fd);
+}
+
+__wasi_errno_t wasmtime_ssp_read(
+  int fd,
+  void *buf,
+  size_t count
+) {
+  return read(fd, buf, count);
+}
+
+__wasi_errno_t wasmtime_ssp_write(
+  int fd,
+  const void *buf,
+  size_t count
+) {
+  return write(fd, buf, count);
 }
 
 __wasi_errno_t wasmtime_ssp_sock_shutdown(
@@ -2829,6 +2928,40 @@ __wasi_errno_t wasmtime_ssp_sock_shutdown(
   if (ret < 0)
     return convert_errno(errno);
   return 0;
+}
+
+__wasi_errno_t wasmtime_ssp_sem_open(
+    const char *name,
+    int oflag,
+    int mode,
+    unsigned int value,
+    my_sem_t *sem
+) {
+  return sem_open(name, oflag, mode, value, (sem_t *)sem);
+}
+
+__wasi_errno_t wasmtime_ssp_sem_close(
+    my_sem_t *sem
+) {
+  return sem_close((sem_t *)sem);
+}
+
+__wasi_errno_t wasmtime_ssp_sem_post(
+    my_sem_t *sem
+) {
+  return sem_post((sem_t *)sem);
+}
+
+__wasi_errno_t wasmtime_ssp_sem_wait(
+    my_sem_t *sem
+) {
+  return sem_wait((sem_t *)sem);
+}
+
+__wasi_errno_t wasmtime_ssp_sem_unlink(
+    const char *name
+) {
+  return sem_unlink(name);
 }
 
 __wasi_errno_t wasmtime_ssp_sched_yield(void) {
