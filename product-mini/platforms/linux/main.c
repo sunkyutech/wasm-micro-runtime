@@ -18,6 +18,8 @@ static char **app_argv;
 
 #define MODULE_PATH ("--module-path=")
 
+#define USE_GLOBAL_HEAP_BUF 1
+
 static int
 print_help()
 {
@@ -33,6 +35,9 @@ print_help()
     printf("  --heap-size=n          Set maximum heap size in bytes, default is 16 KB\n");
     printf("  --repl                 Start a very simple REPL (read-eval-print-loop) mode\n"
            "                         that runs commands in the form of `FUNC ARG...`\n");
+#if USE_GLOBAL_HEAP_BUF != 0
+    printf("  --global-heap-size=n   Set maximum global heap size in bytes, default is 10 MB\n");
+#endif
 #if WASM_ENABLE_LIBC_WASI != 0
     printf("  --env=<env>            Pass wasi environment variables with \"key=value\"\n");
     printf("                         to the program, for example:\n");
@@ -166,10 +171,8 @@ validate_env_str(char *env)
 }
 #endif
 
-#define USE_GLOBAL_HEAP_BUF 0
-
 #if USE_GLOBAL_HEAP_BUF != 0
-static char global_heap_buf[10 * 1024 * 1024] = { 0 };
+uint32_t global_heap_buf_size = 10 * 1024 * 1024;
 #endif
 
 #if WASM_ENABLE_MULTI_MODULE != 0
@@ -267,6 +270,11 @@ main(int argc, char *argv[])
                 return print_help();
             heap_size = atoi(argv[0] + 12);
         }
+        else if (!strncmp(argv[0], "--global-heap-size=", 19)) {
+            if (argv[0][12] == '\0')
+                return print_help();
+            global_heap_buf_size = atoi(argv[0] + 19);
+        }
 #if WASM_ENABLE_LIBC_WASI != 0
         else if (!strncmp(argv[0], "--dir=", 6)) {
             if (argv[0][6] == '\0')
@@ -328,9 +336,13 @@ main(int argc, char *argv[])
     memset(&init_args, 0, sizeof(RuntimeInitArgs));
 
 #if USE_GLOBAL_HEAP_BUF != 0
+    void* global_heap_buf = malloc(global_heap_buf_size);
+    memset(global_heap_buf, 0, global_heap_buf_size);
+    
     init_args.mem_alloc_type = Alloc_With_Pool;
     init_args.mem_alloc_option.pool.heap_buf = global_heap_buf;
     init_args.mem_alloc_option.pool.heap_size = sizeof(global_heap_buf);
+    init_args.mem_alloc_option.pool.heap_size = global_heap_buf_size;
 #else
     init_args.mem_alloc_type = Alloc_With_Allocator;
     init_args.mem_alloc_option.allocator.malloc_func = malloc;
@@ -398,5 +410,10 @@ fail2:
 fail1:
     /* destroy runtime environment */
     wasm_runtime_destroy();
+
+#if USE_GLOBAL_HEAP_BUF != 0
+    free(global_heap_buf);
+#endif
+
     return 0;
 }
