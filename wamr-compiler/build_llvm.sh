@@ -5,6 +5,7 @@
 
 DEPS_DIR=${PWD}/../core/deps
 
+mkdir -p ${DEPS_DIR}
 cd ${DEPS_DIR}
 if [ ! -d "llvm" ]; then
   echo "Clone llvm to core/deps/ .."
