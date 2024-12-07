@@ -21,7 +21,7 @@ void random_buf(void *buf, size_t len) {
 
 #elif CONFIG_HAS_GETRANDOM
 
-#ifndef BH_PLATFORM_LINUX_SGX
+#if !defined(BH_PLATFORM_LINUX_SGX) && !defined(BH_PLATFORM_LINUX_TRUSTZONE)
 #include <sys/random.h>
 #endif
 
