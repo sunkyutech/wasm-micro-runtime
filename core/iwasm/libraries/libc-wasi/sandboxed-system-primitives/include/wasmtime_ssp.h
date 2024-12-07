@@ -28,6 +28,309 @@
 extern "C" {
 #endif
 
+#define __WASI_ADDRESS_FAMILY_INET4 1
+#define __WASI_ADDRESS_FAMILY_UNIX 3
+// #define AF_INET __WASI_ADDRESS_FAMILY_INET4
+// #define AF_UNIX __WASI_ADDRESS_FAMILY_UNIX
+#define AF_INET 2
+#define AF_UNIX 1
+
+/**
+ * IP port number
+ */
+typedef uint16_t __wasi_ip_port_t;
+
+_Static_assert(sizeof(__wasi_ip_port_t) == 2, "witx calculated size");
+_Static_assert(_Alignof(__wasi_ip_port_t) == 2, "witx calculated align");
+/**
+ * An IPv4 address is a 32-bit number that uniquely identifies a network interface on a machine.
+ */
+typedef struct __wasi_addr_ip4_t {
+    uint8_t n0;
+    uint8_t n1;
+    uint8_t h0;
+    uint8_t h1;
+} __wasi_addr_ip4_t;
+
+_Static_assert(sizeof(__wasi_addr_ip4_t) == 4, "witx calculated size");
+_Static_assert(_Alignof(__wasi_addr_ip4_t) == 1, "witx calculated align");
+_Static_assert(offsetof(__wasi_addr_ip4_t, n0) == 0, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_ip4_t, n1) == 1, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_ip4_t, h0) == 2, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_ip4_t, h1) == 3, "witx calculated offset");
+/**
+ * An IPv4 address with a port number
+ */
+typedef struct __wasi_addr_ip4_port_t {
+    __wasi_ip_port_t port;
+    __wasi_addr_ip4_t addr;
+} __wasi_addr_ip4_port_t;
+
+_Static_assert(sizeof(__wasi_addr_ip4_port_t) == 6, "witx calculated size");
+_Static_assert(_Alignof(__wasi_addr_ip4_port_t) == 2, "witx calculated align");
+_Static_assert(offsetof(__wasi_addr_ip4_port_t, port) == 0, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_ip4_port_t, addr) == 2, "witx calculated offset");
+/**
+ * Unix socket that is bound to no more than 107 bytes
+ */
+typedef struct __wasi_addr_unix_t {
+    uint8_t b0;
+    uint8_t b1;
+    uint8_t b2;
+    uint8_t b3;
+    uint8_t b4;
+    uint8_t b5;
+    uint8_t b6;
+    uint8_t b7;
+    uint8_t b8;
+    uint8_t b9;
+    uint8_t b10;
+    uint8_t b11;
+    uint8_t b12;
+    uint8_t b13;
+    uint8_t b14;
+    uint8_t b15;
+    uint8_t b16;
+    uint8_t b17;
+    uint8_t b18;
+    uint8_t b19;
+    uint8_t b20;
+    uint8_t b21;
+    uint8_t b22;
+    uint8_t b23;
+    uint8_t b24;
+    uint8_t b25;
+    uint8_t b26;
+    uint8_t b27;
+    uint8_t b28;
+    uint8_t b29;
+    uint8_t b30;
+    uint8_t b31;
+    uint8_t b32;
+    uint8_t b33;
+    uint8_t b34;
+    uint8_t b35;
+    uint8_t b36;
+    uint8_t b37;
+    uint8_t b38;
+    uint8_t b39;
+    uint8_t b40;
+    uint8_t b41;
+    uint8_t b42;
+    uint8_t b43;
+    uint8_t b44;
+    uint8_t b45;
+    uint8_t b46;
+    uint8_t b47;
+    uint8_t b48;
+    uint8_t b49;
+    uint8_t b50;
+    uint8_t b51;
+    uint8_t b52;
+    uint8_t b53;
+    uint8_t b54;
+    uint8_t b55;
+    uint8_t b56;
+    uint8_t b57;
+    uint8_t b58;
+    uint8_t b59;
+    uint8_t b60;
+    uint8_t b61;
+    uint8_t b62;
+    uint8_t b63;
+    uint8_t b64;
+    uint8_t b65;
+    uint8_t b66;
+    uint8_t b67;
+    uint8_t b68;
+    uint8_t b69;
+    uint8_t b70;
+    uint8_t b71;
+    uint8_t b72;
+    uint8_t b73;
+    uint8_t b74;
+    uint8_t b75;
+    uint8_t b76;
+    uint8_t b77;
+    uint8_t b78;
+    uint8_t b79;
+    uint8_t b80;
+    uint8_t b81;
+    uint8_t b82;
+    uint8_t b83;
+    uint8_t b84;
+    uint8_t b85;
+    uint8_t b86;
+    uint8_t b87;
+    uint8_t b88;
+    uint8_t b89;
+    uint8_t b90;
+    uint8_t b91;
+    uint8_t b92;
+    uint8_t b93;
+    uint8_t b94;
+    uint8_t b95;
+    uint8_t b96;
+    uint8_t b97;
+    uint8_t b98;
+    uint8_t b99;
+    uint8_t b100;
+    uint8_t b101;
+    uint8_t b102;
+    uint8_t b103;
+    uint8_t b104;
+    uint8_t b105;
+    uint8_t b106;
+    uint8_t b107;
+} __wasi_addr_unix_t;
+
+_Static_assert(sizeof(__wasi_addr_unix_t) == 108, "witx calculated size");
+_Static_assert(_Alignof(__wasi_addr_unix_t) == 1, "witx calculated align");
+_Static_assert(offsetof(__wasi_addr_unix_t, b0) == 0, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b1) == 1, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b2) == 2, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b3) == 3, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b4) == 4, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b5) == 5, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b6) == 6, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b7) == 7, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b8) == 8, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b9) == 9, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b10) == 10, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b11) == 11, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b12) == 12, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b13) == 13, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b14) == 14, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b15) == 15, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b16) == 16, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b17) == 17, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b18) == 18, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b19) == 19, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b20) == 20, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b21) == 21, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b22) == 22, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b23) == 23, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b24) == 24, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b25) == 25, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b26) == 26, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b27) == 27, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b28) == 28, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b29) == 29, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b30) == 30, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b31) == 31, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b32) == 32, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b33) == 33, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b34) == 34, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b35) == 35, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b36) == 36, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b37) == 37, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b38) == 38, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b39) == 39, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b40) == 40, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b41) == 41, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b42) == 42, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b43) == 43, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b44) == 44, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b45) == 45, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b46) == 46, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b47) == 47, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b48) == 48, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b49) == 49, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b50) == 50, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b51) == 51, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b52) == 52, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b53) == 53, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b54) == 54, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b55) == 55, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b56) == 56, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b57) == 57, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b58) == 58, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b59) == 59, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b60) == 60, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b61) == 61, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b62) == 62, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b63) == 63, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b64) == 64, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b65) == 65, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b66) == 66, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b67) == 67, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b68) == 68, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b69) == 69, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b70) == 70, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b71) == 71, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b72) == 72, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b73) == 73, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b74) == 74, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b75) == 75, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b76) == 76, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b77) == 77, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b78) == 78, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b79) == 79, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b80) == 80, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b81) == 81, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b82) == 82, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b83) == 83, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b84) == 84, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b85) == 85, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b86) == 86, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b87) == 87, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b88) == 88, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b89) == 89, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b90) == 90, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b91) == 91, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b92) == 92, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b93) == 93, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b94) == 94, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b95) == 95, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b96) == 96, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b97) == 97, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b98) == 98, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b99) == 99, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b100) == 100, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b101) == 101, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b102) == 102, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b103) == 103, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b104) == 104, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b105) == 105, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b106) == 106, "witx calculated offset");
+_Static_assert(offsetof(__wasi_addr_unix_t, b107) == 107, "witx calculated offset");
+/**
+ * Union that makes a generic IP address and port
+ */
+typedef union __wasi_addr_port_u_t {
+    __wasi_addr_ip4_port_t inet4;
+    __wasi_addr_unix_t unix_addr;
+} __wasi_addr_port_u_t;
+typedef struct __wasi_addr_port_t {
+    uint8_t tag;
+    __wasi_addr_port_u_t u;
+} __wasi_addr_port_t;
+
+_Static_assert(sizeof(__wasi_addr_port_t) == 110, "witx calculated size");
+_Static_assert(_Alignof(__wasi_addr_port_t) == 2, "witx calculated align");
+
+typedef uint32_t socklen_t;
+
+_Static_assert(sizeof(socklen_t) == 4, "witx calculated size");
+_Static_assert(_Alignof(socklen_t) == 4, "witx calculated align");
+
+struct my_sockaddr {
+    uint16_t sa_family;  // Address family
+    char sa_data[14];    // Address data
+};
+
+_Static_assert(sizeof(struct my_sockaddr) == 16, "witx calculated size");
+_Static_assert(_Alignof(struct my_sockaddr) == 2, "witx calculated align");
+_Static_assert(offsetof(struct my_sockaddr, sa_family) == 0, "witx calculated offset");
+_Static_assert(offsetof(struct my_sockaddr, sa_data) == 2, "witx calculated offset");
+
+typedef union {
+    char __size[32];
+    long int __align;
+} my_sem_t;
+
+_Static_assert(sizeof(my_sem_t) == 32, "witx calculated size");
+_Static_assert(_Alignof(my_sem_t) == 8, "witx calculated align");
 
 _Static_assert(_Alignof(int8_t) == 1, "non-wasi data layout");
 _Static_assert(_Alignof(uint8_t) == 1, "non-wasi data layout");
@@ -852,27 +1155,121 @@ __wasi_errno_t wasmtime_ssp_random_get(
 ) WASMTIME_SSP_SYSCALL_NAME(random_get) __attribute__((__warn_unused_result__));
 
 __wasi_errno_t wasmtime_ssp_sock_recv(
-#if !defined(WASMTIME_SSP_STATIC_CURFDS)
-    struct fd_table *curfds,
-#endif
-    __wasi_fd_t sock,
-    const __wasi_iovec_t *ri_data,
-    size_t ri_data_len,
-    __wasi_riflags_t ri_flags,
-    size_t *ro_datalen,
-    __wasi_roflags_t *ro_flags
+// #if !defined(WASMTIME_SSP_STATIC_CURFDS)
+//     struct fd_table *curfds,
+// #endif
+    int sockfd,
+    void *buf,
+    size_t len,
+    int flags
 ) WASMTIME_SSP_SYSCALL_NAME(sock_recv) __attribute__((__warn_unused_result__));
 
+__wasi_errno_t wasmtime_ssp_sock_recvfrom(
+    int sockfd,
+    void *buf,
+    size_t len,
+    int flags,
+    struct sockaddr *src_addr,
+    socklen_t *addrlen
+) WASMTIME_SSP_SYSCALL_NAME(sock_recvfrom) __attribute__((__warn_unused_result__));
+
 __wasi_errno_t wasmtime_ssp_sock_send(
-#if !defined(WASMTIME_SSP_STATIC_CURFDS)
-    struct fd_table *curfds,
-#endif
-    __wasi_fd_t sock,
-    const __wasi_ciovec_t *si_data,
-    size_t si_data_len,
-    __wasi_siflags_t si_flags,
-    size_t *so_datalen
+// #if !defined(WASMTIME_SSP_STATIC_CURFDS)
+//     struct fd_table *curfds,
+// #endif
+    int sockfd,
+    const void *buf,
+    size_t len,
+    int flags
 ) WASMTIME_SSP_SYSCALL_NAME(sock_send) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sock_sendto(
+    int sockfd,
+    const void *buf,
+    size_t len,
+    int flags,
+    const struct sockaddr *dest_addr,
+    socklen_t addrlen
+) WASMTIME_SSP_SYSCALL_NAME(sock_sendto) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sock_open(
+    int domain,
+    int type,
+    int protocol
+) WASMTIME_SSP_SYSCALL_NAME(sock_open) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sock_bind(
+    int sockfd, 
+    const struct sockaddr *addr,
+    socklen_t addrlen
+) WASMTIME_SSP_SYSCALL_NAME(sock_bind) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sock_listen(
+    int sockfd,
+    int backlog
+) WASMTIME_SSP_SYSCALL_NAME(sock_listen) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sock_accept(
+    int sockfd,
+    struct sockaddr *addr,
+    socklen_t *addrlen
+) WASMTIME_SSP_SYSCALL_NAME(sock_accept) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sock_connect(
+    int sockfd,
+    const struct sockaddr *addr,
+    socklen_t addrlen
+) WASMTIME_SSP_SYSCALL_NAME(sock_connect) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_mkfifo(
+    const char *path,
+    int mode
+) WASMTIME_SSP_SYSCALL_NAME(mkfifo) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_open(
+    const char *path,
+    int oflag
+) WASMTIME_SSP_SYSCALL_NAME(open) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_close(
+    int fd
+) WASMTIME_SSP_SYSCALL_NAME(close) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_read(
+    int fd,
+    void *buf,
+    size_t count
+) WASMTIME_SSP_SYSCALL_NAME(read) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_write(
+    int fd,
+    const void *buf,
+    size_t count
+) WASMTIME_SSP_SYSCALL_NAME(write) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sem_open(
+    const char *name,
+    int oflag,
+    int mode,
+    unsigned int value,
+    my_sem_t *sem
+) WASMTIME_SSP_SYSCALL_NAME(sem_open) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sem_close(
+    my_sem_t *sem
+) WASMTIME_SSP_SYSCALL_NAME(sem_close) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sem_post(
+    my_sem_t *sem
+) WASMTIME_SSP_SYSCALL_NAME(sem_post) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sem_wait(
+    my_sem_t *sem
+) WASMTIME_SSP_SYSCALL_NAME(sem_wait) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sem_unlink(
+    const char *name
+) WASMTIME_SSP_SYSCALL_NAME(sem_unlink) __attribute__((__warn_unused_result__));
 
 __wasi_errno_t wasmtime_ssp_sock_shutdown(
 #if !defined(WASMTIME_SSP_STATIC_CURFDS)
