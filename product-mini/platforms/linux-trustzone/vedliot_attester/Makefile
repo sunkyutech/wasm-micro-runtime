@@ -18,13 +18,11 @@ all: rootfs
 .PHONY: all_wamr
 all_wamr:
 	$(MAKE) -C host CROSS_COMPILE="$(HOST_CROSS_COMPILE)" --no-builtin-variables
-	$(MAKE) -C plugin CROSS_COMPILE="$(HOST_CROSS_COMPILE)" --no-builtin-variables
 	$(MAKE) -C ta CROSS_COMPILE="$(TA_CROSS_COMPILE)" LDFLAGS=""
 
 .PHONY: clean
 clean: rootfs-clean
 	$(MAKE) -C host clean
-	$(MAKE) -C plugin clean
 	$(MAKE) -C ta clean
 
 rootfs: all_wamr
@@ -32,15 +30,12 @@ rootfs: all_wamr
 	@mkdir -p $(OUTPUT_DIR)
 	@mkdir -p $(OUTPUT_DIR)/ta
 	@mkdir -p $(OUTPUT_DIR)/ca
-	@mkdir -p $(OUTPUT_DIR)/plugin
 	@if [ -e host/vedliot_attester ]; then \
 		cp -p host/vedliot_attester $(OUTPUT_DIR)/ca/; \
 	fi;
-	@cp -pr ta/*.ta $(OUTPUT_DIR)/ta/
-	@cp -pr plugin/*.plugin $(OUTPUT_DIR)/plugin/
+	@cp -pr ta/*.ta $(OUTPUT_DIR)/ta/; \
 
 rootfs-clean:
 	@rm -rf $(OUTPUT_DIR)/ta
 	@rm -rf $(OUTPUT_DIR)/ca
-	@rm -rf $(OUTPUT_DIR)/plugin
 	@rmdir --ignore-fail-on-non-empty $(OUTPUT_DIR) || test ! -e $(OUTPUT_DIR)
