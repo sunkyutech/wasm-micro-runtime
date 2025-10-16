@@ -7,5 +7,8 @@
 
 #define COMMAND_RUN_WASM        0
 #define COMMAND_CONFIGURE_HEAP  1
+#define COMMAND_INVOKE_SP       2
+#define COMMAND_TA_MAIN         3
+#define COMMAND_DO_NOTHING      4
 
 #endif /* TA_WAMR_H */
