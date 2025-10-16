@@ -338,6 +338,149 @@ _Static_assert(_Alignof(int16_t) == 2, "non-wasi data layout");
 _Static_assert(_Alignof(uint16_t) == 2, "non-wasi data layout");
 _Static_assert(_Alignof(int32_t) == 4, "non-wasi data layout");
 _Static_assert(_Alignof(uint32_t) == 4, "non-wasi data layout");
+
+#ifdef sa_handler
+#undef sa_handler
+#endif
+#ifdef sa_sigaction
+#undef sa_sigaction
+#endif
+#ifdef si_pid
+#undef si_pid
+#endif
+#ifdef si_uid
+#undef si_uid
+#endif
+#ifdef si_status
+#undef si_status
+#endif
+#ifdef si_utime
+#undef si_utime
+#endif
+#ifdef si_stime
+#undef si_stime
+#endif
+#ifdef si_value
+#undef si_value
+#endif
+#ifdef si_int
+#undef si_int
+#endif
+#ifdef si_ptr
+#undef si_ptr
+#endif
+#ifdef si_overrun
+#undef si_overrun
+#endif
+#ifdef si_timerid
+#undef si_timerid
+#endif
+#ifdef si_addr
+#undef si_addr
+#endif
+#ifdef si_band
+#undef si_band
+#endif
+#ifdef si_fd
+#undef si_fd
+#endif
+#ifdef si_addr_lsb
+#undef si_addr_lsb
+#endif
+#ifdef si_lower
+#undef si_lower
+#endif
+#ifdef si_upper
+#undef si_upper
+#endif
+#ifdef si_pkey
+#undef si_pkey
+#endif
+#ifdef si_call_addr
+#undef si_call_addr
+#endif
+#ifdef si_syscall
+#undef si_syscall
+#endif
+#ifdef si_arch
+#undef si_arch
+#endif
+#ifdef sa_restorer
+#undef sa_restorer
+#endif
+#ifdef sa_mask
+#undef sa_mask
+#endif
+#ifdef sa_flags
+#undef sa_flags
+#endif
+
+typedef unsigned int my_sigset_t;
+typedef int pid_t;
+typedef unsigned int uid_t;
+typedef long unsigned int my_clock_t;
+union my_sigval {
+    int sival_int;
+    void *sival_ptr;
+};
+typedef struct {
+    int      si_signo;        /* Signal number */
+    int      si_errno;        /* An errno value */
+    int      si_code;         /* Signal code */
+    int      si_trapno;       /* Trap number that caused hardware-generated signal (unused on most architectures) */
+    pid_t    si_pid;          /* Sending process ID */
+    uid_t    si_uid;          /* Real user ID of sending process */
+    int      si_status;       /* Exit value or signal */
+    my_clock_t  si_utime;        /* User time consumed */
+    my_clock_t  si_stime;        /* System time consumed */
+    union    my_sigval si_value; /* Signal value */
+    int      si_int;          /* POSIX.1b signal */
+    void     *si_ptr;         /* POSIX.1b signal */
+    int      si_overrun;      /* Timer overrun count; POSIX.1b timers */
+    int      si_timerid;      /* Timer ID; POSIX.1b timers */
+    void     *si_addr;        /* Memory location which caused fault */
+    long     si_band;         /* Band event (was int in glibc 2.3.2 and earlier) */
+    int      si_fd;           /* File descriptor */
+    short    si_addr_lsb;     /* Least significant bit of address (since Linux 2.6.32) */
+    void     *si_lower;       /* Lower bound when address violation occurred (since Linux 3.19) */
+    void     *si_upper;       /* Upper bound when address violation occurred (since Linux 3.19) */
+    int      si_pkey;         /* Protection key on PTE that caused fault (since Linux 4.6) */
+    void     *si_call_addr;   /* Address of system call instruction (since Linux 3.5) */
+    int      si_syscall;      /* Number of attempted system call (since Linux 3.5) */
+    unsigned int si_arch;     /* Architecture of attempted system call (since Linux 3.5) */ 
+} my_siginfo_t;
+struct my_sigaction {
+    void       (*sa_handler)(int);
+    void       (*sa_sigaction)(int, my_siginfo_t *, void *);
+    my_sigset_t   sa_mask;
+    int        sa_flags;
+    void       (*sa_restorer)(void);
+};
+
+typedef struct
+{
+  int __allocated;
+  int __used;
+  struct __spawn_action *__actions;
+  int __pad[16];
+} my_posix_spawn_file_actions_t;
+
+struct my_sched_param
+{
+  int sched_priority;
+};
+
+typedef struct
+{
+  short int __flags;
+  pid_t __pgrp;
+  my_sigset_t __sd;
+  my_sigset_t __ss;
+  struct my_sched_param __sp;
+  int __policy;
+  int __pad[16];
+} my_posix_spawnattr_t;
+
 #if 0
 _Static_assert(_Alignof(int64_t) == 8, "non-wasi data layout");
 _Static_assert(_Alignof(uint64_t) == 8, "non-wasi data layout");
@@ -1247,12 +1390,11 @@ __wasi_errno_t wasmtime_ssp_write(
     size_t count
 ) WASMTIME_SSP_SYSCALL_NAME(write) __attribute__((__warn_unused_result__));
 
-__wasi_errno_t wasmtime_ssp_sem_open(
+uintptr_t wasmtime_ssp_sem_open(
     const char *name,
     int oflag,
     int mode,
-    unsigned int value,
-    my_sem_t *sem
+    unsigned int value
 ) WASMTIME_SSP_SYSCALL_NAME(sem_open) __attribute__((__warn_unused_result__));
 
 __wasi_errno_t wasmtime_ssp_sem_close(
@@ -1270,6 +1412,85 @@ __wasi_errno_t wasmtime_ssp_sem_wait(
 __wasi_errno_t wasmtime_ssp_sem_unlink(
     const char *name
 ) WASMTIME_SSP_SYSCALL_NAME(sem_unlink) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_shm_open(
+    const char *name,
+    int oflag,
+    int mode
+) WASMTIME_SSP_SYSCALL_NAME(shm_open) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_shm_unlink(
+    const char *name
+) WASMTIME_SSP_SYSCALL_NAME(shm_unlink) __attribute__((__warn_unused_result__));
+
+typedef int64_t off_t;
+
+uintptr_t wasmtime_ssp_mmap(
+    void *addr,
+    size_t length,
+    int prot,
+    int flags,
+    int fd,
+    off_t offset
+) WASMTIME_SSP_SYSCALL_NAME(mmap) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_strcpy(
+    char *dest,
+    const char *src
+) WASMTIME_SSP_SYSCALL_NAME(strcpy) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_kill(
+    int pid,
+    int sig
+) WASMTIME_SSP_SYSCALL_NAME(kill) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_getpid(
+) WASMTIME_SSP_SYSCALL_NAME(getpid) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_pause(
+) WASMTIME_SSP_SYSCALL_NAME(pause) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_sigaction(
+    int signum,
+    const struct my_sigaction *act,
+    struct my_sigaction *oldact
+) WASMTIME_SSP_SYSCALL_NAME(sigaction) __attribute__((__warn_unused_result__));
+
+typedef int mqd_t;
+typedef unsigned int mode_t;
+
+struct my_mq_attr {
+	long mq_flags, mq_maxmsg, mq_msgsize, mq_curmsgs, _reserved[4];
+};
+
+__wasi_errno_t wasmtime_ssp_mq_close(
+    mqd_t mqd
+) WASMTIME_SSP_SYSCALL_NAME(mq_close) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_mq_open(
+    const char *name,
+    int oflag,
+    mode_t mode,
+    struct my_mq_attr *attr
+) WASMTIME_SSP_SYSCALL_NAME(mq_open) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_mq_send(
+    mqd_t mqd,
+    const char *msg_ptr,
+    size_t msg_len,
+    unsigned int msg_prio
+) WASMTIME_SSP_SYSCALL_NAME(mq_send) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_mq_receive(
+    mqd_t mqd,
+    char *msg_ptr,
+    size_t msg_len,
+    unsigned int *msg_prio
+) WASMTIME_SSP_SYSCALL_NAME(mq_receive) __attribute__((__warn_unused_result__));
+
+__wasi_errno_t wasmtime_ssp_mq_unlink(
+    const char *name
+) WASMTIME_SSP_SYSCALL_NAME(mq_unlink) __attribute__((__warn_unused_result__));
 
 __wasi_errno_t wasmtime_ssp_sock_shutdown(
 #if !defined(WASMTIME_SSP_STATIC_CURFDS)

@@ -1273,44 +1273,50 @@ wasi_write(wasm_exec_env_t exec_env, int fd,
     return wasmtime_ssp_write(fd, buf, count);
 }
 
-static wasi_errno_t
-wasi_sem_open(wasm_exec_env_t exec_env, const char *name,
-            int oflag,
-            int mode,
-            unsigned int value,
-            my_sem_t *sem)
-{
-    wasm_module_inst_t module_inst = get_module_inst(exec_env);
-    return wasmtime_ssp_sem_open(name, oflag, mode, value, sem);
-}
+// // static wasi_errno_t
+// static uintptr_t
+// wasi_sem_open(wasm_exec_env_t exec_env, const char *name,
+//             int oflag,
+//             int mode,
+//             unsigned int value)
+// // wasi_sem_open(wasm_exec_env_t exec_env, const char *name,
+// //             int oflag,
+// //             int mode,
+// //             unsigned int value,
+// //             my_sem_t *sem)
+// {
+//     wasm_module_inst_t module_inst = get_module_inst(exec_env);
+//     // return wasmtime_ssp_sem_open(name, oflag, mode, value, sem);
+//     return wasmtime_ssp_sem_open(name, oflag, mode, value);
+// }
 
-static wasi_errno_t
-wasi_sem_close(wasm_exec_env_t exec_env, my_sem_t *sem)
-{
-    wasm_module_inst_t module_inst = get_module_inst(exec_env);
-    return wasmtime_ssp_sem_close(sem);
-}
+// static wasi_errno_t
+// wasi_sem_close(wasm_exec_env_t exec_env, my_sem_t *sem)
+// {
+//     wasm_module_inst_t module_inst = get_module_inst(exec_env);
+//     return wasmtime_ssp_sem_close(sem);
+// }
 
-static wasi_errno_t
-wasi_sem_wait(wasm_exec_env_t exec_env, my_sem_t *sem)
-{
-    wasm_module_inst_t module_inst = get_module_inst(exec_env);
-    return wasmtime_ssp_sem_wait(sem);
-}
+// static wasi_errno_t
+// wasi_sem_wait(wasm_exec_env_t exec_env, my_sem_t *sem)
+// {
+//     wasm_module_inst_t module_inst = get_module_inst(exec_env);
+//     return wasmtime_ssp_sem_wait(sem);
+// }
 
-static wasi_errno_t
-wasi_sem_post(wasm_exec_env_t exec_env, my_sem_t *sem)
-{
-    wasm_module_inst_t module_inst = get_module_inst(exec_env);
-    return wasmtime_ssp_sem_post(sem);
-}
+// static wasi_errno_t
+// wasi_sem_post(wasm_exec_env_t exec_env, my_sem_t *sem)
+// {
+//     wasm_module_inst_t module_inst = get_module_inst(exec_env);
+//     return wasmtime_ssp_sem_post(sem);
+// }
 
-static wasi_errno_t
-wasi_sem_unlink(wasm_exec_env_t exec_env, const char *name)
-{
-    wasm_module_inst_t module_inst = get_module_inst(exec_env);
-    return wasmtime_ssp_sem_unlink(name);
-}
+// static wasi_errno_t
+// wasi_sem_unlink(wasm_exec_env_t exec_env, const char *name)
+// {
+//     wasm_module_inst_t module_inst = get_module_inst(exec_env);
+//     return wasmtime_ssp_sem_unlink(name);
+// }
 
 static wasi_errno_t
 wasi_sock_shutdown(wasm_exec_env_t exec_env,
@@ -1324,6 +1330,204 @@ wasi_sock_shutdown(wasm_exec_env_t exec_env,
         return (wasi_errno_t)-1;
 
     return wasmtime_ssp_sock_shutdown(curfds, sock, how);
+}
+
+static wasi_errno_t
+wasi_shm_open(wasm_exec_env_t exec_env, const char *name,
+            wasi_fd_t oflag,
+            wasi_fd_t mode)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    return wasmtime_ssp_shm_open(name, oflag, mode);
+}
+
+static wasi_errno_t
+wasi_shm_unlink(wasm_exec_env_t exec_env, const char *name)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    return wasmtime_ssp_shm_unlink(name);
+}
+
+static uintptr_t
+wasi_mmap(wasm_exec_env_t exec_env, void *addr, wasi_fd_t len,
+    wasi_fd_t prot, wasi_fd_t flags, wasi_fd_t fd, wasi_fd_t offset)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    return wasmtime_ssp_mmap(addr, len, prot, flags, fd, offset);
+}
+
+static __wasi_errno_t
+wasi_strcpy(wasm_exec_env_t exec_env, char *dest, const char *src)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    char *native_dest = (char *)wasm_runtime_addr_app_to_native(module_inst, dest);
+    if (native_dest) {
+        // printf("native_dest: %s, src: %s\n", native_dest, src);
+        // printf("native_dest: %p, src: %p\n", (void*)native_dest, (void*)src);
+        return wasmtime_ssp_strcpy(native_dest, src);
+    }
+    char *native_src = (char *)wasm_runtime_addr_app_to_native(module_inst, src);
+    if (native_src) {
+        // printf("dest: %s, native_src: %s\n", dest, native_src);
+        // printf("dest: %p, native_src: %p\n", (void*)dest, (void*)native_src);
+        return wasmtime_ssp_strcpy(dest, native_src);
+    }
+
+    return wasmtime_ssp_strcpy(dest, src);
+}
+
+static wasi_errno_t
+wasi_kill(wasm_exec_env_t exec_env, int pid, int sig)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    return wasmtime_ssp_kill(pid, sig);
+}
+
+static wasi_errno_t
+wasi_getpid(wasm_exec_env_t exec_env, int *pid)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    return wasmtime_ssp_getpid(pid);
+}
+
+static wasi_errno_t
+wasi_pause(wasm_exec_env_t exec_env)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    return wasmtime_ssp_pause();
+}
+
+#ifdef sa_handler
+#undef sa_handler
+#endif
+
+#ifdef sa_sigaction
+#undef sa_sigaction
+#endif
+
+#define MAX_SIGNALS 32
+wasm_exec_env_t current_exec_env;
+int signal_handler_indices[MAX_SIGNALS];
+
+void wasm_signal_handler_proxy(int signo) {
+    // printf("wasm_signal_handler_proxy called with signo: %d\n", signo);
+
+    int index = signal_handler_indices[signo];
+    if (index < 0)
+        return;
+    // printf("index: %d\n", index);
+
+    uint32_t argv[1];
+    argv[0] = (uint32_t)signo;
+
+    if (!wasm_runtime_call_indirect(current_exec_env, index, 1, argv)) {
+        const char *err = wasm_runtime_get_exception(get_module_inst(current_exec_env));
+        printf("Error in wasm handler: %s\n", err ? err : "Unknown");
+    }
+}
+
+static wasi_errno_t
+wasi_sigaction(wasm_exec_env_t exec_env, int signum,
+            const struct my_sigaction *act, struct my_sigaction *oldact)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+
+    current_exec_env = exec_env;
+    struct my_sigaction local_act = *act;
+    local_act.sa_handler = wasm_signal_handler_proxy;
+    signal_handler_indices[signum] = (int)(uintptr_t)(act->sa_handler);
+
+    return wasmtime_ssp_sigaction(signum, &local_act, oldact);
+}
+
+typedef uint16_t __wasi_oflags_t;
+
+#define __WASI_OFLAGS_CREAT      ((__wasi_oflags_t)(1 << 0))  // 0x0001
+#define __WASI_OFLAGS_DIRECTORY  ((__wasi_oflags_t)(1 << 1))  // 0x0002
+#define __WASI_OFLAGS_EXCL       ((__wasi_oflags_t)(1 << 2))  // 0x0004
+#define __WASI_OFLAGS_TRUNC      ((__wasi_oflags_t)(1 << 3))  // 0x0008
+
+typedef uint16_t __wasi_fdflags_t;
+
+#define __WASI_FDFLAGS_APPEND     ((__wasi_fdflags_t)(1 << 0)) // 0x0001
+#define __WASI_FDFLAGS_DSYNC      ((__wasi_fdflags_t)(1 << 1)) // 0x0002
+#define __WASI_FDFLAGS_NONBLOCK   ((__wasi_fdflags_t)(1 << 2)) // 0x0004
+#define __WASI_FDFLAGS_RSYNC      ((__wasi_fdflags_t)(1 << 3)) // 0x0008
+#define __WASI_FDFLAGS_SYNC       ((__wasi_fdflags_t)(1 << 4)) // 0x0010
+
+int convert_wasi_oflag_to_host(int wasi_oflag) {
+    int host_oflag = 0;
+
+    // アクセスモードの変換
+    if (wasi_oflag & 0x10000000) { // O_WRONLY
+        host_oflag |= O_WRONLY;
+    }
+    if (wasi_oflag & 0x04000000) { // O_RDONLY
+        if (host_oflag & O_WRONLY)
+            host_oflag &= ~O_WRONLY, host_oflag |= O_RDWR; // 両方なら O_RDWR
+        else
+            host_oflag |= O_RDONLY;
+    }
+
+    // __WASI_OFLAGS_* ← 12ビット左シフトされている
+    int wasi_oflags = (wasi_oflag >> 12) & 0xF;  // (CREAT, EXCL, DIRECTORY, TRUNC)
+    if (wasi_oflags & __WASI_OFLAGS_CREAT)     host_oflag |= O_CREAT;
+    if (wasi_oflags & __WASI_OFLAGS_EXCL)      host_oflag |= O_EXCL;
+    if (wasi_oflags & __WASI_OFLAGS_DIRECTORY) host_oflag |= O_DIRECTORY;
+    if (wasi_oflags & __WASI_OFLAGS_TRUNC)     host_oflag |= O_TRUNC;
+
+    // その他のフラグ (FDFLAGSに対応する)
+    if (wasi_oflag & __WASI_FDFLAGS_APPEND)     host_oflag |= O_APPEND;
+    if (wasi_oflag & __WASI_FDFLAGS_DSYNC)      host_oflag |= O_DSYNC;
+    if (wasi_oflag & __WASI_FDFLAGS_NONBLOCK)   host_oflag |= O_NONBLOCK;
+    if (wasi_oflag & __WASI_FDFLAGS_RSYNC)      host_oflag |= O_RSYNC;
+    if (wasi_oflag & __WASI_FDFLAGS_SYNC)       host_oflag |= O_SYNC;
+
+    return host_oflag;
+}
+
+static wasi_errno_t
+wasi_mq_close(wasm_exec_env_t exec_env, mqd_t mqd)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    return wasmtime_ssp_mq_close(mqd);
+}
+
+static wasi_errno_t
+wasi_mq_open(wasm_exec_env_t exec_env, const char *name, int oflag, mode_t mode, struct mq_attr *attr)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    int posix_oflag = convert_wasi_oflag_to_host(oflag);
+    // printf("oflag: %d, posix_oflag: %d\n", oflag, posix_oflag);
+    return wasmtime_ssp_mq_open(name, posix_oflag, mode, attr);
+}
+
+static wasi_errno_t
+wasi_mq_send(wasm_exec_env_t exec_env, mqd_t mqd, const char *msg_ptr, size_t msg_len, unsigned int msg_prio)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    return wasmtime_ssp_mq_send(mqd, msg_ptr, msg_len, msg_prio);
+}
+
+static wasi_errno_t
+wasi_mq_receive(wasm_exec_env_t exec_env, mqd_t mqd, char *msg_ptr, size_t msg_len, unsigned int *msg_prio)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    return wasmtime_ssp_mq_receive(mqd, msg_ptr, msg_len, msg_prio);
+}
+
+static wasi_errno_t
+wasi_mq_unlink(wasm_exec_env_t exec_env, const char *name)
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    return wasmtime_ssp_mq_unlink(name);
+}
+
+static wasi_errno_t
+wasi_posix_spawn(wasm_exec_env_t exec_env, pid_t *restrict pid, const char *restrict path, const my_posix_spawn_file_actions_t *fa, const my_posix_spawnattr_t *restrict attr, char *const argv[restrict], char *const envp[restrict])
+{
+    wasm_module_inst_t module_inst = get_module_inst(exec_env);
+    return wasmtime_ssp_posix_spawn(pid, path, fa, attr, argv, envp);
 }
 
 static wasi_errno_t
@@ -1393,11 +1597,25 @@ static NativeSymbol native_symbols_libc_wasi[] = {
     REG_NATIVE_FUNC(close, "(i)i"),
     REG_NATIVE_FUNC(read, "(i*i)i"),
     REG_NATIVE_FUNC(write, "(i*i)i"),
-    REG_NATIVE_FUNC(sem_open, "(*iii*)i"),
-    REG_NATIVE_FUNC(sem_close, "(*)i"),
-    REG_NATIVE_FUNC(sem_wait, "(*)i"),
-    REG_NATIVE_FUNC(sem_post, "(*)i"),
-    REG_NATIVE_FUNC(sem_unlink, "(*)i"),
+    // REG_NATIVE_FUNC(sem_open, "(*iii)i"),
+    // REG_NATIVE_FUNC(sem_close, "(i)i"),
+    // REG_NATIVE_FUNC(sem_wait, "(i)i"),
+    // REG_NATIVE_FUNC(sem_post, "(i)i"),
+    // REG_NATIVE_FUNC(sem_unlink, "(*)i"),
+    REG_NATIVE_FUNC(shm_open, "(*ii)i"),
+    REG_NATIVE_FUNC(shm_unlink, "(*)i"),
+    REG_NATIVE_FUNC(mmap, "(*iiiii)i"),
+    REG_NATIVE_FUNC(strcpy, "(ii)i"),
+    REG_NATIVE_FUNC(kill, "(ii)i"),
+    REG_NATIVE_FUNC(getpid, "()i"),
+    REG_NATIVE_FUNC(pause, "()i"),
+    REG_NATIVE_FUNC(sigaction, "(i**)i"),
+    REG_NATIVE_FUNC(mq_close, "(i)i"),
+    REG_NATIVE_FUNC(mq_open, "(*ii*)i"),
+    REG_NATIVE_FUNC(mq_send, "(i*ii)i"),
+    REG_NATIVE_FUNC(mq_receive, "(i*i*)i"),
+    REG_NATIVE_FUNC(mq_unlink, "(*)i"),
+    REG_NATIVE_FUNC(posix_spawn, "(i*****)i"),
 };
 
 uint32

@@ -2930,38 +2930,156 @@ __wasi_errno_t wasmtime_ssp_sock_shutdown(
   return 0;
 }
 
-__wasi_errno_t wasmtime_ssp_sem_open(
+// __wasi_errno_t wasmtime_ssp_sem_open(
+//     const char *name,
+//     int oflag,
+//     int mode,
+//     unsigned int value,
+//     my_sem_t *sem
+// ) {
+// uintptr_t wasmtime_ssp_sem_open(
+//     const char *name,
+//     int oflag,
+//     int mode,
+//     unsigned int value
+// ) {
+//   // return sem_open(name, oflag, mode, value, (sem_t *)sem);
+//   return sem_open(name, oflag, mode, value);
+// }
+
+// __wasi_errno_t wasmtime_ssp_sem_close(
+//     my_sem_t *sem
+// ) {
+//   return sem_close((sem_t *)sem);
+// }
+
+// __wasi_errno_t wasmtime_ssp_sem_post(
+//     my_sem_t *sem
+// ) {
+//   return sem_post((sem_t *)sem);
+// }
+
+// __wasi_errno_t wasmtime_ssp_sem_wait(
+//     my_sem_t *sem
+// ) {
+//   return sem_wait((sem_t *)sem);
+// }
+
+// __wasi_errno_t wasmtime_ssp_sem_unlink(
+//     const char *name
+// ) {
+//   return sem_unlink(name);
+// }
+
+__wasi_errno_t wasmtime_ssp_shm_open(
     const char *name,
     int oflag,
-    int mode,
-    unsigned int value,
-    my_sem_t *sem
+    int mode
 ) {
-  return sem_open(name, oflag, mode, value, (sem_t *)sem);
+  return shm_open(name, oflag, mode);
 }
 
-__wasi_errno_t wasmtime_ssp_sem_close(
-    my_sem_t *sem
-) {
-  return sem_close((sem_t *)sem);
-}
-
-__wasi_errno_t wasmtime_ssp_sem_post(
-    my_sem_t *sem
-) {
-  return sem_post((sem_t *)sem);
-}
-
-__wasi_errno_t wasmtime_ssp_sem_wait(
-    my_sem_t *sem
-) {
-  return sem_wait((sem_t *)sem);
-}
-
-__wasi_errno_t wasmtime_ssp_sem_unlink(
+__wasi_errno_t wasmtime_ssp_shm_unlink(
     const char *name
 ) {
-  return sem_unlink(name);
+  return shm_unlink(name);
+}
+
+uintptr_t wasmtime_ssp_mmap(
+    void *addr,
+    size_t len,
+    int prot,
+    int flags,
+    int fd,
+    off_t offset
+) {
+  return mmap(addr, len, prot, flags, fd, offset);
+}
+
+__wasi_errno_t wasmtime_ssp_strcpy(
+    char *dest,
+    const char *src
+) {
+  strcpy(dest, src);
+  return 0;
+}
+
+__wasi_errno_t wasmtime_ssp_kill(
+    int pid,
+    int sig
+) {
+  return kill(pid, sig);
+}
+
+__wasi_errno_t wasmtime_ssp_getpid(
+) {
+  return getpid();
+}
+
+__wasi_errno_t wasmtime_ssp_pause(
+) {
+  return pause();
+}
+
+__wasi_errno_t wasmtime_ssp_sigaction(
+    int signum,
+    const struct my_sigaction *act,
+    struct my_sigaction *oldact
+) {
+  return sigaction(signum, (const struct sigaction *)act, (struct sigaction *)oldact);
+}
+
+__wasi_errno_t wasmtime_ssp_mq_close(
+    mqd_t mqd
+) {
+  return mq_close(mqd);
+}
+
+__wasi_errno_t wasmtime_ssp_mq_open(
+    const char *name,
+    int oflag,
+    mode_t mode,
+    struct my_mq_attr *attr
+) {
+  return mq_open(name, oflag, mode, (struct mq_attr *)attr);
+}
+
+__wasi_errno_t wasmtime_ssp_mq_send(
+    mqd_t mqd,
+    const char *msg_ptr,
+    size_t msg_len,
+    unsigned int msg_prio
+) {
+  return mq_send(mqd, msg_ptr, msg_len, msg_prio);
+}
+
+__wasi_errno_t wasmtime_ssp_mq_receive(
+    mqd_t mqd,
+    char *msg_ptr,
+    size_t msg_len,
+    unsigned int *msg_prio
+) {
+  return mq_receive(mqd, msg_ptr, msg_len, msg_prio);
+}
+
+__wasi_errno_t wasmtime_ssp_mq_unlink(
+    const char *name
+) {
+  return mq_unlink(name);
+}
+
+__wasi_errno_t wasmtime_ssp_posix_spawn(
+    pid_t *pid,
+    const char *path,
+    const struct my_posix_spawn_file_actions *file_actions,
+    const struct my_posix_spawnattr *attrp,
+    char *const argv[],
+    char *const envp[]
+) {
+  return posix_spawn(pid, path,
+      file_actions,
+      attrp,
+      argv, envp);
 }
 
 __wasi_errno_t wasmtime_ssp_sched_yield(void) {
