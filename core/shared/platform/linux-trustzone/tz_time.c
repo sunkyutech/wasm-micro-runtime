@@ -49,7 +49,6 @@ int clock_gettime(clockid_t clock_id, struct timespec *tp)
 
     tp->tv_sec = time.seconds;
     tp->tv_nsec = time.nanos; // The GP API has been extended to retrieve nano time
-    IMSG("clock_gettime: %ld.%09ld", tp->tv_sec, tp->tv_nsec);
 
     return 0;
 }

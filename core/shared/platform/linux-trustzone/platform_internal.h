@@ -14,10 +14,8 @@
 
 #include <tee_internal_api.h>
 #include <tee_internal_api_extensions.h>
-#include "plugin_ta.h"
 
 #include "tz_file.h"
-// #include "tz_pipe.h"
 #include "tz_pthread.h"
 #include "tz_signal.h"
 #include "tz_socket.h"

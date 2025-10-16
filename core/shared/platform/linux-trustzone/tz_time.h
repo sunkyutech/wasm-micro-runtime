@@ -28,4 +28,3 @@ int utimensat(int dirfd, const char *pathname, const struct timespec times[2], i
 #endif
 
 #endif /* end of _TZ_TIME_H */
-

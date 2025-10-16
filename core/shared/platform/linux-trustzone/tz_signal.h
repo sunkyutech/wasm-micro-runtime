@@ -49,4 +49,3 @@ int raise(int sig);
 #endif
 
 #endif /* end of _TZ_SIGNAL_H */
-

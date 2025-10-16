@@ -1,5 +1,4 @@
 #include "platform_api_vmcore.h"
-#include "plugin_ta.h"
 
 int raise(int sig)
 {

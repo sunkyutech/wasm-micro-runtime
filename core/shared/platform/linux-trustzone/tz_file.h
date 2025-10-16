@@ -108,6 +108,7 @@ typedef long __syscall_slong_t;
 typedef unsigned long dev_t;
 typedef unsigned long ino_t;
 typedef unsigned mode_t;
+typedef unsigned socklen_t;
 typedef long blkcnt_t;
 
 typedef int pid_t;
@@ -159,6 +160,7 @@ struct pollfd {
 
 int close(int fd);
 int closedir(DIR *dirp);
+
 int fcntl(int fd, int cmd, ... /* arg */ );
 int fdatasync(int fd);
 DIR *fdopendir(int fd);
@@ -172,14 +174,12 @@ int isatty(int fd);
 int linkat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags);
 off_t lseek(int fd, off_t offset, int whence);
 int mkdirat(int dirfd, const char *pathname, mode_t mode);
-int mkfifo(const char *pathname, mode_t mode);
 int open(const char *pathname, int flags, ...);
 int openat(int dirfd, const char *pathname, int flags, ...);
 int poll(struct pollfd *fds, nfds_t nfds, int timeout);
 int posix_fallocate(int fd, off_t offset, off_t len);
 ssize_t preadv(int fd, const struct iovec *iov, int iovcnt, off_t offset);
 ssize_t pwritev(int fd, const struct iovec *iov, int iovcnt, off_t offset);
-ssize_t read(int fd, void *buf, size_t count);
 struct dirent *readdir(DIR *dirp);
 ssize_t readlinkat(int dirfd, const char *pathname, char *buf, size_t bufsiz);
 ssize_t readv(int fd, const struct iovec *iov, int iovcnt);
@@ -190,9 +190,8 @@ int sched_yield(void);
 void seekdir(DIR *dirp, long loc);
 int symlinkat(const char *target, int newdirfd, const char *linkpath);
 long telldir(DIR *dirp);
-int unlink(const char *pathname);
 int unlinkat(int dirfd, const char *pathname, int flags);
-ssize_t write(int fd, const void *buf, size_t count);
+
 ssize_t writev(int fd, const struct iovec *iov, int iovcnt);
 
 #ifdef __cplusplus
@@ -200,4 +199,3 @@ ssize_t writev(int fd, const struct iovec *iov, int iovcnt);
 #endif
 
 #endif /* end of _TZ_FILE_H */
-

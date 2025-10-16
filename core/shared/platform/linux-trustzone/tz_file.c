@@ -1,28 +1,14 @@
 #include "platform_api_vmcore.h"
 
+
 // Global output buffer that is points to the untrusted memory
 static void *output_buffer;
 static uint64_t output_buffer_size;
 
 int close(int fd)
 {
-    TEE_UUID uuid = PLUGIN_UUID;
-    size_t out_len;
-
-    struct PluginOperationData *p = TEE_Malloc(sizeof(struct PluginOperationData), 0);
-    if (!p)
-        return TEE_ERROR_OUT_OF_MEMORY;
-    p->int_param1 = fd;
-
-    TEE_Result tee_res = tee_invoke_supp_plugin(&uuid, FILE_CLOSE_CMD, NULL,
-                    p, sizeof(struct PluginOperationData), &out_len);
-    if (tee_res)
-        EMSG("invoke plugin failed close with code 0x%x", tee_res);
-
-    int res = p->res.int_val;
-    TEE_Free(p);
-
-    return res;
+    EMSG("close is not supported.");
+    return -1;
 }
 
 int closedir(DIR *dirp)
@@ -120,53 +106,10 @@ int mkdirat(int dirfd, const char *pathname, mode_t mode)
     return -1;
 }
 
-int mkfifo(const char *pathname, mode_t mode)
-{
-    TEE_UUID uuid = PLUGIN_UUID;
-	size_t out_len;
-
-    size_t len = strlen(pathname) + 1;
-	struct PluginOperationData *p = TEE_Malloc(sizeof(struct PluginOperationData) + len, 0);
-	if (!p)
-		return TEE_ERROR_OUT_OF_MEMORY;
-    p->size_t_param1 = len;
-	TEE_MemMove(p->buf, pathname, p->size_t_param1);
-    p->int_param1 = mode;
-
-	TEE_Result tee_res = tee_invoke_supp_plugin(&uuid, FILE_MAKE_CMD, NULL,
-					p, sizeof(struct PluginOperationData) + p->size_t_param1, &out_len);
-	if (tee_res) {
-		EMSG("invoke plugin failed mkfifo() with code 0x%x", tee_res);
-	}
-
-	int res = p->res.int_val;
-	TEE_Free(p);
-
-	return res;
-}
-
 int open(const char *pathname, int flags, ...)
 {
-    TEE_UUID uuid = PLUGIN_UUID;
-    size_t out_len;
-
-    size_t len = strlen(pathname) + 1;
-    struct PluginOperationData *p = TEE_Malloc(sizeof(struct PluginOperationData) + len, 0);
-    if (!p)
-        return TEE_ERROR_OUT_OF_MEMORY;
-    p->size_t_param1 = len;
-    TEE_MemMove(p->buf, pathname, p->size_t_param1);
-    p->int_param1 = flags;
-
-    TEE_Result tee_res = tee_invoke_supp_plugin(&uuid, FILE_OPEN_CMD, NULL,
-                    p, sizeof(struct PluginOperationData) + p->size_t_param1, &out_len);
-    if (tee_res)
-        EMSG("invoke plugin failed open with code 0x%x", tee_res);
-
-    int res = p->res.int_val;
-    TEE_Free(p);
-
-    return res;
+    EMSG("open is not supported.");
+    return -1;
 }
 
 int openat(int dirfd, const char *pathname, int flags, ...)
@@ -197,29 +140,6 @@ ssize_t pwritev(int fd, const struct iovec *iov, int iovcnt, off_t offset)
 {
     EMSG("pwritev is not supported.");
     return -1;
-}
-
-ssize_t read(int fd, void *buf, size_t count)
-{
-    TEE_UUID uuid = PLUGIN_UUID;
-    size_t out_len;
-
-    struct PluginOperationData *p = TEE_Malloc(sizeof(struct PluginOperationData) + count, 0);
-    if (!p)
-        return TEE_ERROR_OUT_OF_MEMORY;
-    p->int_param1 = fd;
-    p->size_t_param1 = count;
-
-    TEE_Result tee_res = tee_invoke_supp_plugin(&uuid, FILE_READ_CMD, NULL,
-                    p, sizeof(struct PluginOperationData) + p->size_t_param1, &out_len);
-    if (tee_res)
-        EMSG("invoke plugin failed read with code 0x%x", tee_res);
-
-    TEE_MemMove(buf, p->buf, p->size_t_param1);
-    ssize_t res = p->res.ssize_t_val;
-    TEE_Free(p);
-
-    return res;
 }
 
 struct dirent *readdir(DIR *dirp)
@@ -280,56 +200,10 @@ long telldir(DIR *dirp)
     return -1;
 }
 
-int unlink(const char *pathname)
-{
-    TEE_UUID uuid = PLUGIN_UUID;
-    size_t out_len;
-
-    size_t len = strlen(pathname) + 1;
-    struct PluginOperationData *p = TEE_Malloc(sizeof(struct PluginOperationData) + len, 0);
-    if (!p)
-        return TEE_ERROR_OUT_OF_MEMORY;
-    p->size_t_param1 = len;
-    TEE_MemMove(p->buf, pathname, p->size_t_param1);
-
-    TEE_Result tee_res = tee_invoke_supp_plugin(&uuid, FILE_UNLINK_CMD, NULL,
-                    p, sizeof(struct PluginOperationData) + p->size_t_param1, &out_len);
-    if (tee_res)
-        EMSG("invoke plugin failed unlink with code 0x%x", tee_res);
-
-    int res = p->res.int_val;
-    TEE_Free(p);
-
-    return res;
-}
-
 int unlinkat(int dirfd, const char *pathname, int flags)
 {
     EMSG("unlinkat is not supported.");
     return -1;
-}
-
-ssize_t write(int fd, const void *buf, size_t count)
-{
-    TEE_UUID uuid = PLUGIN_UUID;
-    size_t out_len;
-
-    struct PluginOperationData *p = TEE_Malloc(sizeof(struct PluginOperationData) + count, 0);
-    if (!p)
-        return TEE_ERROR_OUT_OF_MEMORY;
-    p->int_param1 = fd;
-    p->size_t_param1 = count;
-    TEE_MemMove(p->buf, buf, p->size_t_param1);
-
-    TEE_Result tee_res = tee_invoke_supp_plugin(&uuid, FILE_WRITE_CMD, NULL,
-                    p, sizeof(struct PluginOperationData) + p->size_t_param1, &out_len);
-    if (tee_res)
-        EMSG("invoke plugin failed write with code 0x%x", tee_res);
-
-    ssize_t res = p->res.ssize_t_val;
-    TEE_Free(p);
-
-    return res;
 }
 
 ssize_t writev(int fd, const struct iovec *iov, int iovcnt)

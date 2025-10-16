@@ -1,6 +1,8 @@
 #ifndef _TZ_SOCKET_H
 #define _TZ_SOCKET_H
 
+#include "tz_file.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -37,10 +39,6 @@ extern "C" {
 #define SHUT_WR 1
 #define SHUT_RDWR 2
 
-#ifndef MIN
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
-#endif
-
 struct msghdr {
     void *msg_name;
     socklen_t msg_namelen;
@@ -51,19 +49,11 @@ struct msghdr {
     int msg_flags;
 };
 
-int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
-int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
-int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
-int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen);
-int listen(int sockfd, int backlog);
-ssize_t recv(int sockfd, void *buf, size_t len, int flags);
-ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);
-ssize_t recvmsg(int sockfd, struct msghdr *msg, int flags);
-ssize_t send(int sockfd, const void *buf, size_t len, int flags);
-ssize_t sendmsg(int sockfd, const struct msghdr *msg, int flags);
-ssize_t sendto(int sockfd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen);
-int shutdown(int sockfd, int how);
 int socket(int domain, int type, int protocol);
+int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen);
+ssize_t sendmsg(int sockfd, const struct msghdr *msg, int flags);
+ssize_t recvmsg(int sockfd, struct msghdr *msg, int flags);
+int shutdown(int sockfd, int how);
 
 #ifdef __cplusplus
 }

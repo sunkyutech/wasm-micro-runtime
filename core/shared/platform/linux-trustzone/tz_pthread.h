@@ -32,16 +32,8 @@ int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock);
 int pthread_rwlock_unlock(pthread_rwlock_t *rwlock);
 int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock);
 
-/* Semaphore API */
-int sem_close(sem_t **sem);
-int sem_open(const char *name, int oflag, int mode, unsigned int value, sem_t **sem);
-int sem_post(sem_t **sem);
-int sem_unlink(const char *name);
-int sem_wait(sem_t **sem);
-
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* end of _TZ_PTHREAD_H */
-
