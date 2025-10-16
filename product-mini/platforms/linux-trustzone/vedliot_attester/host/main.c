@@ -13,14 +13,6 @@
 // GlobalPlatfrom TA
 #include <wamr_ta.h>
 
-// Temp Socket headers
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <unistd.h>
-#include <pthread.h>
-
 #define timespec_to_micro(t) \
     t.tv_sec * 1000 * 1000 + t.tv_nsec / 1000
 
@@ -164,61 +156,6 @@ static void free_buffers(tee_ctx* ctx) {
     free(ctx->benchmark_buffer);
 }
 
-// int main(int argc, char *argv[])
-// {
-//     if (argc < 3)
-//     {
-//         printf("ERROR: The number of arguments does not match.\n");
-//         printf("SYNTAX: %s heap_size wasm_path [wasm_arg]\n", argv[0]);
-//         exit(1);
-//     }
-
-//     tee_ctx ctx;
-//     bool success = true;
-//     uint32_t heap_size = atoi(argv[1]);
-//     char* wasm_path = argv[2];
-//     char* arg = argc > 3 ? argv[3] : NULL;
-
-//     allocate_buffers(&ctx, 5 * 1024);
-
-//     prepare_tee_session(&ctx);
-
-//     configure_heap_size(&ctx, heap_size);
-
-//     success = start_wasm(&ctx, wasm_path, arg);
-
-//     terminate_tee_session(&ctx);
-
-//     print_buffers(&ctx);
-//     free_buffers(&ctx);
-  
-//     return success ? EXIT_SUCCESS : 1;
-// }
-
-uint32_t heap_size;
-char* wasm_path;
-
-int ta_launch_thread(void* arg)
-{
-    tee_ctx ctx;
-    bool success = true;
-
-    allocate_buffers(&ctx, 5 * 1024);
-
-    prepare_tee_session(&ctx);
-
-    configure_heap_size(&ctx, heap_size);
-
-    success = start_wasm(&ctx, wasm_path, arg);
-
-    terminate_tee_session(&ctx);
-
-    print_buffers(&ctx);
-    free_buffers(&ctx);
-  
-    return success ? EXIT_SUCCESS : 1;
-}
-
 int main(int argc, char *argv[])
 {
     if (argc < 3)
@@ -230,53 +167,22 @@ int main(int argc, char *argv[])
 
     tee_ctx ctx;
     bool success = true;
-    heap_size = atoi(argv[1]);
-    wasm_path = argv[2];
-    char *arg = argc > 3 ? argv[3] : NULL;
+    uint32_t heap_size = atoi(argv[1]);
+    char* wasm_path = argv[2];
+    char* arg = argc > 3 ? argv[3] : NULL;
 
-    // サブスレッドがTAを起動
-    pthread_t thread_id;
-    int cmd_num = 0;
-    pthread_create(&thread_id, NULL, ta_launch_thread, (void*)&cmd_num);
+    allocate_buffers(&ctx, 5 * 1024);
 
-    sleep(1);
+    prepare_tee_session(&ctx);
 
-    // クライアント側のプログラムを実行
-    int ret = system("/client");
-    if (ret == -1) {
-        perror("system");
-        exit(EXIT_FAILURE);
-    }
+    configure_heap_size(&ctx, heap_size);
+  
+    success = start_wasm(&ctx, wasm_path, arg);
 
-    // ToDo: コマンドの引数として2つのファイルを指定して，それぞれをCA・TAとして実行する
-    // if (argc < 4) {
-    //     printf("ERROR: The number of arguments does not match.\n");
-    //     printf("SYNTAX: %s heap_size TA_file_path CA_file_path [wasm_arg]\n", argv[0]);
-    //     exit(1);
-    // }
+    terminate_tee_session(&ctx);
 
-    // tee_ctx ctx;
-    // bool success = true;
-    // heap_size = atoi(argv[1]);
-    // ta_path = argv[2];  // 大域変数として定義
-    // ca_path = argv[3];  // 大域変数として定義
-    // char *arg = argc > 4 ? argv[4] : NULL;
-
-    // // サブスレッドがTAを起動
-    // pthread_t thread_id;
-    // pthread_create(&thread_id, NULL, ta_launch_thread, (void*)&cmd_num);
-
-    // sleep(1);
-
-    // // メインスレッドでのプログラム実行
-    // int ret = system(ca_path);
-    // if (ret == -1) {
-    //     perror("system");
-    //     exit(EXIT_FAILURE);
-    // }
-    
-    
-    pthread_join(thread_id, NULL);
-
-    return 0;
+    print_buffers(&ctx);
+    free_buffers(&ctx);
+  
+    return success ? EXIT_SUCCESS : 1;
 }
